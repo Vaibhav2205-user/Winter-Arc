@@ -259,7 +259,7 @@ h2.title{font-size:clamp(28px,6vw,38px); margin:0 0 26px;}
     </div>
   </div>
   <div id="taskList"></div>
-  <div class="switch"><a onclick="showScreen('home')">Switch user</a></div>
+  <div class="switch"><a onclick="showScreen('home')">Switch user</a> &nbsp;&middot;&nbsp; <a onclick="showScreen('rules')">View rules</a></div>
 </div>
 
 <script>
@@ -296,8 +296,14 @@ function saveStore(){ try{ localStorage.setItem('winterarc_v1', JSON.stringify(s
 function dateKey(idx){ const d = new Date(START); d.setDate(d.getDate()+idx); return d.toISOString().slice(0,10); }
 function fmtDate(idx){ const d = new Date(START); d.setDate(d.getDate()+idx); return d.toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'}); }
 function showScreen(name){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('screen-'+name).classList.add('active'); }
-function selectUser(name){ currentUser = name; if(!store[name]) store[name] = {}; showScreen('rules'); }
+function selectUser(name){
+  currentUser = name;
+  if(!store[name]) store[name] = {};
+  if(store[name].__ready){ startTracker(); } else { showScreen('rules'); }
+}
 function startTracker(){
+  store[currentUser].__ready = true;
+  saveStore();
   const today = new Date();
   let idx = Math.round((new Date(today.getFullYear(),today.getMonth(),today.getDate())-START)/86400000);
   if(idx<0||idx>=DAYS) idx = 0;
